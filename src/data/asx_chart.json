@@ -1,0 +1,20 @@
+[
+  {
+    "symbol": "29M",
+    "marketCap": 1249183000,
+    "priceChangeFiveDayPercent": -1.886792452830182,
+    "isTargetSec": false
+  },
+  {
+    "symbol": "DDD",
+    "marketCap": 11641116,
+    "priceChangeFiveDayPercent": 0,
+    "isTargetSec": true
+  },
+  {
+    "symbol": "5EA",
+    "marketCap": 0,
+    "priceChangeFiveDayPercent": 0,
+    "isTargetSec": false
+  }
+]
