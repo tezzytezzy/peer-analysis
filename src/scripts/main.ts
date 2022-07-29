@@ -2,268 +2,157 @@
 /* TODO
 1. set Tabindex for all controls
 2. autofocus appropriately
-3. Get rid of <div> element?
-4. DONE Insert default instructional text in dataliast before user input USE placeholder
+3. DONE Get rid of <div> element
+4. DONE Insert default instructional text in dataliast before user input -> USE placeholder
+5. DONE Get rido f <BODY></BODY> tags from html
 
 
 *** LESSONS *** 
 - What is the difference between display:none and visibility:hidden style?
   visibility: hidden hides the element, but it still takes up space in the layout.
   display: none removes the element completely from the document.
-
-
-
 */
+
 
 const TICKER_LABEL = "Ticker/Company Name"
 const INDUSTRY_LABEL = "Industry/Classification"
+const PLACEHOLDER_TAG = "placeholder"
 const TICKER_PLACEHOLDER = "e.g. \'SGP\' or \'STOCKLAND\'"
 const INDUSTRY_PLACEHOLDER = "e.g. \'Energy\'"
 const BODY_ID = "body_container"
-const INPUT_PREFIX = "input"
+const ID_TAG = "id"
+const INPUT_TAG = "input"
+const STYLE_DISPLAY_TRUE = "block"
+const STYLE_DISPLAY_FALSE = "none"
 
-function stripName(str: string) {
-    return str.slice(0, str.indexOf('/'))
+function stripName(str: string): string {
+  return str.slice(0, str.indexOf('/'))
 }
 
 function createBody() {
-    const body = document.createElement("body")
-    body.id = BODY_ID
-    document.body = body
+  const body = document.createElement("body")
+  body.id = BODY_ID
+  document.body = body
 }
 
 function createRadio(category: string, byDefault: boolean) {
-    const div = document.createElement('div')
+  const RADIO_TAG = "radio"
+  const categoryName = stripName(category)
+  const listIdTag = RADIO_TAG + categoryName
 
-    const categoryName = stripName(category)
-    const listIdTag = 'radio' + categoryName
+  const radio = document.createElement(INPUT_TAG)
+  radio.setAttribute("type", RADIO_TAG)
 
-    const radio = document.createElement(INPUT_PREFIX)
-    radio.setAttribute('type', 'radio')
-    radio.setAttribute('name', 'radioName') // for grouping radios. Without this, both radios get selected
-    // radio.setAttribute('value', 'radioValue') // value sent back to the server
-    radio.setAttribute('id', listIdTag)
+  // for grouping radios. Without this, both radios get selected
+  radio.setAttribute("name", RADIO_TAG + "Category")
+  // radio.setAttribute('value', 'radioValue') // where value is to be sent back to the server
+  radio.setAttribute(ID_TAG, listIdTag)
 
-    const label = document.createElement('label')
-    label.setAttribute('for', listIdTag)
+  const label = document.createElement('label')
+  label.setAttribute("for", listIdTag)
 
-    div.id = 'div-' + listIdTag
-    div.appendChild(radio)
-    div.appendChild(label)
-    document.getElementById(BODY_ID).appendChild(div)
-    /*   const formContainer = document.getElementById('selectors')
-  
-  formContainer.appendChild(radio)
-  formContainer.appendChild(label)
-   */
-    label.innerHTML = category
+  // 3 ways to write DOM in TypeScript:
+  // 1. Use type assertion to tell compiler explicitly what all the posible types can be
+  // const body = document.getElementById(BODY_ID) as HTMLElement | null
+  // if (body!= null) {
+  //   body.appendChild(div)
+  // }
+  //
+  // 2. Use non-null assertion operator (!)
+  //   It tells the compiler to temporarily relax the "not null" constraint that it might 
+  //   otherwise demand. It says to the compiler: "As the developer, I know better than you
+  //   that this variable cannot be null right now".
+  // document.getElementById(BODY_ID)!.appendChild(div)
+  //
+  // 3. Use the new optional chaining operator (?)
+  //   This short-circuits (skips) where it is null or undefined
+  const body = document.getElementById(BODY_ID)
+  body?.appendChild(radio)
+  body?.appendChild(label)
+  //   BUT, this (?) cannot be used when assigning property (e.g. body?.style.display = "block")
+  //   "ts(2779): The left-hand side of an assignment expression may not be an optional property access."
+  //   In this case, 1) if-statement to check null/undefined or 2) the non-null (!) can be used (see below)
 
-    radio.checked = byDefault
+  label.innerHTML = category
+  radio.checked = byDefault
 
-    // use an anonymous function to pass in categoryName
-    radio.addEventListener("click", function() {
-        showDatalist(categoryName)
-    }, false)
-
+  // use an anonymous function to pass in categoryName
+  radio.addEventListener("click", function () {
+    showDatalist(categoryName)
+  }, false)
 }
 
 function showDatalist(category: string) {
   /* pass in 'Ticker' or 'Industry' as category */
-  
-    // const dlTicker = document.getElementById('dlTicker')
-    // const dlIndustry = document.getElementById('dlIndustry')
 
-    switch (category) {
-    case 'Ticker':
-        // console.log(document.getElementById('input-dlTicker').style.display)
-        // console.log(document.getElementById('input-dlIndustry').style.display)
-        /*         		document.getElementById("dlIndustry").style.setAttribute('display', 'block')
-        		            document.getElementById("dlTicker").style.setAttribute('display', 'none') */
-        /*          		dlIndustry.hidden = true
-         		               dlTicker.hidden = false */
-        /* dlIndustry.style.display = "none"
-        dlTicker.style.display = "block" */
-        document.getElementById(INPUT_PREFIX + 'Industry').style.display = "none"
-        document.getElementById(INPUT_PREFIX + category).style.display = "block"
-        
-        // console.log(document.getElementById('input-dlTicker').style.display)
-        // console.log(document.getElementById('input-dlIndustry').style.display)
-        /* dlTicker.autofocus = true */
-        document.getElementById(INPUT_PREFIX + category).autofocus = true
-        document.getElementById(INPUT_PREFIX + category).setAttribute('placeholder', TICKER_PLACEHOLDER)
-        break
-    case 'Industry':
-        // console.log(document.getElementById('input-dlTicker').style.display)
-        // console.log(document.getElementById('input-dlIndustry').style.display)
-        // dlTicker.hidden = true
-        // dlIndustry.hidden = false
-        // document.getElementById('input-dlTicker').style.display = "none"
-        // document.getElementById('input-dlIndustry').style.display = "block"
-        document.getElementById(INPUT_PREFIX + 'Ticker').style.display = "none"
-        document.getElementById(INPUT_PREFIX + category).style.display = "block"
-        // console.log(document.getElementById('input-dlTicker').style.display)
-        // console.log(document.getElementById('input-dlIndustry').style.display)
-        
-        /* dlIndustry.autofocus = true */
-        document.getElementById(INPUT_PREFIX + category).autofocus = true
-        document.getElementById(INPUT_PREFIX + category).setAttribute('placeholder', INDUSTRY_PLACEHOLDER)
-        break
+  const tickerLabel = stripName(TICKER_LABEL)
+  const industryLabel = stripName(INDUSTRY_LABEL)
+
+  switch (category) {
+    case tickerLabel:
+      document.getElementById(INPUT_TAG + industryLabel)!.style.display = STYLE_DISPLAY_FALSE
+      document.getElementById(INPUT_TAG + category)!.style.display = STYLE_DISPLAY_TRUE
+      /* dlTicker.autofocus = true */
+      document.getElementById(INPUT_TAG + category)!.autofocus = true
+      document.getElementById(INPUT_TAG + category)!.setAttribute(PLACEHOLDER_TAG, TICKER_PLACEHOLDER)
+      break
+    case industryLabel:
+      document.getElementById(INPUT_TAG + tickerLabel)!.style.display = STYLE_DISPLAY_FALSE
+      document.getElementById(INPUT_TAG + category)!.style.display = STYLE_DISPLAY_TRUE
+
+      /* dlIndustry.autofocus = true */
+      document.getElementById(INPUT_TAG + category)!.autofocus = true
+      document.getElementById(INPUT_TAG + category)!.setAttribute(PLACEHOLDER_TAG, INDUSTRY_PLACEHOLDER)
+      break
     default:
-        console.log('Duh!')
-        alert('error')
-    }
-
-}
-
-function createDatalist(optionList, category: string, byDefault: boolean) {
-    // const formId = 'selectors' // match on the one on the html file
-    const div = document.createElement('div')
-    const strippedName = stripName(category)
-    const listIdTag = 'dl' + strippedName
-
-    div.id = 'div-' + listIdTag
-
-    // must bind input and datalist with input's list and datalist's id
-    const inputElem = document.createElement('input');
-    inputElem.setAttribute('id', INPUT_PREFIX + strippedName)
-    inputElem.setAttribute('list', listIdTag);
-    // document.getElementById(div).appendChild(inputElem)
-    // document.getElementById('div-' + listIdTag).appendChild(inputElem)
-    div.appendChild(inputElem)
-
-    const dlElem = document.createElement('datalist');
-    dlElem.setAttribute('id', listIdTag);
-    // document.getElementById(div).appendChild(dlElem)
-    // document.getElementById('div-' + listIdTag).appendChild(dlElem)
-    div.appendChild(dlElem)
-
-    for (let i = 0; i < optionList.length; i++) {
-        const opt = document.createElement('option')
-        opt.setAttribute('value', optionList[i])
-        // opt.setAttribute('label', optionList[i] + '123')
-        //  document.getElementById(listIdTag).appendChild(opt)
-
-        dlElem.appendChild(opt)
-    }
-
-    document.getElementById(BODY_ID).appendChild(div)
-
-    /* inputElem.autofocus = byDefault */
-
-    if (byDefault) {
-      document.getElementById(INPUT_PREFIX + strippedName).autofocus = byDefault
-      document.getElementById(INPUT_PREFIX + strippedName).setAttribute('placeholder', TICKER_PLACEHOLDER)
-    }
-
-    /*
-    document.getElementById('input-' + listIdTag).autofocus = byDefault
-    inputElem.style.display = 'block'
-    */
-    inputElem.style.display = byDefault ? 'block' : 'none'
-    /*   inputElem.hidden = !(byDefault) */
-    
-
-}
-
-/*   const formTag = 'selectors'
-  const tag = 'stock-selector'
-  
-  const optionList = ["AMP", "BHP", "SM1", "ZZZ"]
-  
-    // must bind input and datalist with input's list and datalist's id
-  const inputElem = document.createElement('input');
-  inputElem.setAttribute('list', tag);
-  document.getElementById(formTag).appendChild(inputElem);
-  
-  const dlElem = document.createElement('datalist');
-  dlElem.setAttribute('id', tag);
-  document.getElementById(formTag).appendChild(dlElem);
-  
-  for (let i = 0; i < optionList.length; i++) {
-    const opt = document.createElement('option');
-    opt.setAttribute('value', optionList[i]);
-    document.getElementById(tag).appendChild(opt);
+      console.log('Duh!')
+      alert('error')
   }
-   */
 
-/*   var fruit1 = document.createElement("OPTION");
-    fruit1.setAttribute("value", "mango");
-    document.getElementById("fruits").appendChild(fruit1);
-    var fruit2 = document.createElement("OPTION");
-    fruit2.setAttribute("value", "papaya");
-    document.getElementById("fruits").appendChild(fruit2); */
-
-/*   const inputElem = document.createElement('input')
-    const dlElem = document.createElement('datalist')
-    
-    const tag = 'stock-selector'
-      inputElem.setAttribute('list', tag)
-    
-    document.getElementById("controls").appendChild(inputElem);
-    
-    dlElem.setAttribute('id', tag)
-    document.getElementById("controls").appendChild(dlElem);
-    
-    output.placeholder = 'default'
-    
-    for (let i = 0; i < optionList.length; i++) {
-      const option = document.createElement('option')
-      option.value = optionList[i]
-      option.setAttribute("text", optionList[i])
-      option.setAttribute("value", i + optionList[i])
-      document.getElementById(tag).appendChild(option);
-      datalist.appendChild(option)
-    }
-     */
-/* 
-
-      const dlStockSelector = document.createElement('input')
-      let i = 0
-      let len = optionList.length
-      dl = document.createElement('datalist')
-
-  dlStockSelector.id = 'dlStocks'
-      for (let i; i < len; i += 1) {
-          const option = document.createElement('option')
-          option.value = optionList[i]
-          dlStockSelector.appendChild(option)
-      }
-      dlStockSelector.appendChild(dl) */
-/* function fillSelect() { // create option using DOM
-  const newOption = document.createElement('option')
-  const optionText = document.createTextNode('Option Text')
-  // set option text
-  newOption.appendChild(optionText)
-  // and option value
-  newOption.setAttribute('value', 'Option Value')
-
-  var x = document.getElementById("industry-selector")
-  var option = document.createElement("option")
-  option.value = "C1"
-  console.log(option.value)
-  option.text = "Consume Sta."
-  x.add(option)
-  ;
-
-  option.value = "C2"
-  console.log(option.value)
-  option.text = "Consume Disc."
-  x.add(option)
-
-  option.value = "T1"
-  console.log(option.value)
-  option.text = "Technology"
-
-  x.appendChild(option)
-  x.add(option)
 }
- */
+
+function createDatalist(optionList: string[], category: string, byDefault: boolean) {
+  const strippedName = stripName(category)
+  const listIdTag = "dl" + strippedName
+
+  // must bind input and datalist with input's list and datalist's id
+  const inputElem = document.createElement(INPUT_TAG);
+  inputElem.setAttribute(ID_TAG, INPUT_TAG + strippedName)
+  inputElem.setAttribute("list", listIdTag);
+
+  const dlElem = document.createElement('datalist');
+  dlElem.setAttribute(ID_TAG, listIdTag);
+
+  for (let i = 0; i < optionList.length; i++) {
+    const opt = document.createElement('option')
+    opt.setAttribute('value', optionList[i]) // this value gets extracted by code
+    // opt.setAttribute('label', optionList[i] + '123') // this value gets "shown" in datalist
+
+    dlElem.appendChild(opt)
+  }
+
+  document.getElementById(BODY_ID)?.appendChild(dlElem)
+  document.getElementById(BODY_ID)?.appendChild(inputElem)
+
+  /* inputElem.autofocus = byDefault */
+
+  if (byDefault) {
+    const input = document.getElementById(INPUT_TAG + strippedName)
+    
+    if (input) {
+      input.autofocus = byDefault
+      input.setAttribute(PLACEHOLDER_TAG, TICKER_PLACEHOLDER)
+    }
+  }
+
+  inputElem.style.display = byDefault ? STYLE_DISPLAY_TRUE: STYLE_DISPLAY_FALSE
+}
+
 createBody()
 
 createRadio(TICKER_LABEL, true)
+document.getElementById(BODY_ID)?.appendChild(document.createElement('br'))
 createRadio(INDUSTRY_LABEL, false)
-
-// document.getElementById('selectors').appendChild(document.createElement('br'))
 
 createDatalist(["AMP", "BHP", "SM1", "ZZZ"], TICKER_LABEL, true)
 createDatalist(["Auto", "Cons Desc."], INDUSTRY_LABEL, false)
